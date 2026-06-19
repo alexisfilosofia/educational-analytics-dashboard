@@ -2,6 +2,10 @@
 
 A professional Streamlit demo for educational data cleaning, validation, descriptive analytics, dashboarding, and exportable reporting. The app is designed as a freelance-friendly portfolio project that shows how messy tabular education data can be transformed into clear, reproducible outputs using Python and pandas.
 
+## Live demo
+
+Streamlit app: https://educational-analytics-dashboard-h7upkza2ggpfqv25u4uskv.streamlit.app/
+
 ## Features
 
 - Upload CSV or XLSX files.
@@ -66,7 +70,9 @@ This demo does not use real student records. The sample dataset in `data/sample_
 
 ## Deployment
 
-A future version can be deployed on Streamlit Cloud once the project repository is published. The app is structured so the sample dataset and source modules can run from a clean public environment.
+The app is deployed on Streamlit Cloud:
+
+https://educational-analytics-dashboard-h7upkza2ggpfqv25u4uskv.streamlit.app/
 
 ## Portfolio Connection
 
