@@ -26,3 +26,4 @@ def risk_chart_data(df: pd.DataFrame) -> pd.DataFrame:
     if distribution.empty:
         return pd.DataFrame()
     return distribution.set_index("risk_level")[["count"]]
+

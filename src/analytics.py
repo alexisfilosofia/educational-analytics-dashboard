@@ -92,3 +92,4 @@ def categorical_distribution(df: pd.DataFrame, column: str, *, max_categories: i
     distribution = counts.rename_axis(column).reset_index(name="count")
     distribution["percent"] = (distribution["count"] / len(df) * 100).round(2) if len(df) else 0.0
     return distribution
+
