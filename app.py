@@ -259,34 +259,55 @@ def main() -> None:
     with chart_cols[0]:
         st.write("Students by course")
         students_chart = students_by_course_chart_data(filtered_df)
-        st.bar_chart(students_chart) if not students_chart.empty else st.info("Requires a `course` column.")
+        if students_chart.empty:
+            st.info("Requires a `course` column.")
+        else:
+            st.bar_chart(students_chart)
 
         st.write("Risk level distribution")
         risk_chart = risk_chart_data(filtered_df)
-        st.bar_chart(risk_chart) if not risk_chart.empty else st.info("Requires a `risk_level` column.")
+        if risk_chart.empty:
+            st.info("Requires a `risk_level` column.")
+        else:
+            st.bar_chart(risk_chart)
 
         st.write("Average grade by course")
         grade_chart = course_metric_chart_data(filtered_df, "average_grade")
-        st.bar_chart(grade_chart) if not grade_chart.empty else st.info("Requires `course` and `average_grade` columns.")
+        if grade_chart.empty:
+            st.info("Requires `course` and `average_grade` columns.")
+        else:
+            st.bar_chart(grade_chart)
 
     with chart_cols[1]:
         st.write("Average attendance by course")
         attendance_chart = course_metric_chart_data(filtered_df, "average_attendance")
-        st.bar_chart(attendance_chart) if not attendance_chart.empty else st.info("Requires `course` and `attendance_rate` columns.")
+        if attendance_chart.empty:
+            st.info("Requires `course` and `attendance_rate` columns.")
+        else:
+            st.bar_chart(attendance_chart)
 
         st.write("Failed subjects by risk level")
         failed_by_risk_chart = failed_subjects_by_risk_chart_data(filtered_df)
-        st.bar_chart(failed_by_risk_chart) if not failed_by_risk_chart.empty else st.info("Requires `risk_level` and `failed_subjects` columns.")
+        if failed_by_risk_chart.empty:
+            st.info("Requires `risk_level` and `failed_subjects` columns.")
+        else:
+            st.bar_chart(failed_by_risk_chart)
 
     st.subheader("Descriptive analysis")
     tabs = st.tabs(["Numeric summary", "Risk distribution", "Categorical distributions"])
     with tabs[0]:
         numeric = numeric_summary(filtered_df)
-        st.dataframe(numeric, width="stretch") if not numeric.empty else st.info("No numeric columns found.")
+        if numeric.empty:
+            st.info("No numeric columns found.")
+        else:
+            st.dataframe(numeric, width="stretch")
 
     with tabs[1]:
         risk = risk_distribution(filtered_df)
-        st.dataframe(risk, width="stretch") if not risk.empty else st.info("No `risk_level` column found.")
+        if risk.empty:
+            st.info("No `risk_level` column found.")
+        else:
+            st.dataframe(risk, width="stretch")
 
     with tabs[2]:
         categorical_columns = filtered_df.select_dtypes(include=["object", "category", "string"]).columns.tolist()
@@ -332,6 +353,7 @@ def main() -> None:
             )
 
     st.caption("Privacy note: this demo ships with synthetic sample data only. Do not upload sensitive student records.")
+    return None
 
 
 if __name__ == "__main__":
