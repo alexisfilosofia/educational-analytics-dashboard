@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from .analytics import risk_distribution, summarize_by_course
+from .analytics import risk_distribution, risk_summary_by_course, summarize_by_course
 
 
 def students_by_course_chart_data(df: pd.DataFrame) -> pd.DataFrame:
@@ -27,3 +27,20 @@ def risk_chart_data(df: pd.DataFrame) -> pd.DataFrame:
         return pd.DataFrame()
     return distribution.set_index("risk_level")[["count"]]
 
+
+def failed_subjects_by_risk_chart_data(df: pd.DataFrame) -> pd.DataFrame:
+    if "risk_level" not in df.columns or "failed_subjects" not in df.columns:
+        return pd.DataFrame()
+
+    working = df.copy()
+    working["failed_subjects"] = pd.to_numeric(working["failed_subjects"], errors="coerce")
+    working["risk_level"] = working["risk_level"].fillna("Missing").astype(str).str.strip().replace("", "Missing")
+    chart_data = working.groupby("risk_level", dropna=False)["failed_subjects"].mean().round(2).reset_index()
+    return chart_data.set_index("risk_level")[["failed_subjects"]]
+
+
+def risk_summary_by_course_chart_data(df: pd.DataFrame) -> pd.DataFrame:
+    summary = risk_summary_by_course(df)
+    if summary.empty:
+        return pd.DataFrame()
+    return summary.pivot(index="course", columns="risk_level", values="student_count").fillna(0)

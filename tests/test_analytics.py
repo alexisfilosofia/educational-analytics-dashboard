@@ -1,6 +1,13 @@
 import pandas as pd
 
-from src.analytics import risk_distribution, summarize_by_course
+from src.analytics import (
+    data_quality_report,
+    detect_out_of_range_values,
+    filter_dataset,
+    risk_distribution,
+    risk_summary_by_course,
+    summarize_by_course,
+)
 from src.data_cleaning import (
     clean_dataset,
     missing_values_summary,
@@ -92,7 +99,7 @@ def test_summarize_by_course_returns_expected_course_metrics():
     assert grade_1["average_attendance"] == 85
     assert grade_1["average_grade"] == 7
     assert grade_1["high_risk_count"] == 1
-    assert grade_1["high_risk_share"] == 0.5
+    assert grade_1["high_risk_percentage"] == 50
 
 
 def test_risk_distribution_counts_and_percentages():
@@ -105,3 +112,72 @@ def test_risk_distribution_counts_and_percentages():
     assert high["count"] == 2
     assert high["percent"] == 40
     assert missing["count"] == 2
+
+
+def test_filter_dataset_ignores_all_and_missing_columns():
+    df = pd.DataFrame(
+        {
+            "year": [2024, 2025, 2025],
+            "course": ["Grade 1", "Grade 1", "Grade 2"],
+            "risk_level": ["Low", "High", "High"],
+        }
+    )
+
+    filtered = filter_dataset(df, {"year": ["2025"], "course": ["All"], "missing": ["x"]})
+
+    assert len(filtered) == 2
+    assert set(filtered["course"]) == {"Grade 1", "Grade 2"}
+
+
+def test_detect_out_of_range_values_returns_invalid_rows():
+    df = pd.DataFrame({"attendance_rate": [95, 101, -2, None, "bad"]})
+
+    out_of_range = detect_out_of_range_values(df, "attendance_rate", 0, 100)
+
+    assert out_of_range["attendance_rate"].tolist() == [101, -2]
+
+
+def test_data_quality_report_includes_missing_duplicates_and_ranges():
+    df = pd.DataFrame(
+        {
+            "student_id": ["S001", "S001", "S003"],
+            "attendance_rate": [90, 120, 80],
+            "average_grade": [8, 11, None],
+            "empty_column": ["", None, ""],
+        }
+    )
+
+    report = data_quality_report(df)
+
+    duplicate_ids = report.loc[report["check"] == "duplicate_student_id", "value"].iloc[0]
+    empty_columns = report.loc[report["check"] == "empty_columns", "value"].iloc[0]
+    attendance_range = report.loc[
+        (report["check"] == "out_of_range") & (report["column"] == "attendance_rate"),
+        "value",
+    ].iloc[0]
+    grade_range = report.loc[
+        (report["check"] == "out_of_range") & (report["column"] == "average_grade"),
+        "value",
+    ].iloc[0]
+
+    assert duplicate_ids == 1
+    assert empty_columns == 1
+    assert attendance_range == 1
+    assert grade_range == 1
+
+
+def test_risk_summary_by_course_counts_risk_levels():
+    df = pd.DataFrame(
+        {
+            "course": ["Grade 1", "Grade 1", "Grade 2", "Grade 2"],
+            "risk_level": ["High", "Low", "High", ""],
+        }
+    )
+
+    summary = risk_summary_by_course(df)
+    grade_1_high = summary.loc[(summary["course"] == "Grade 1") & (summary["risk_level"] == "High")].iloc[0]
+    grade_2_missing = summary.loc[(summary["course"] == "Grade 2") & (summary["risk_level"] == "Missing")].iloc[0]
+
+    assert grade_1_high["student_count"] == 1
+    assert grade_1_high["course_percentage"] == 50
+    assert grade_2_missing["student_count"] == 1

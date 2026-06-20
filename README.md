@@ -1,6 +1,6 @@
 # Educational Analytics Dashboard
 
-A professional Streamlit demo for educational data cleaning, validation, descriptive analytics, dashboarding, and exportable reporting. The app is designed as a freelance-friendly portfolio project that shows how messy tabular education data can be transformed into clear, reproducible outputs using Python and pandas.
+A professional Streamlit demo for educational data cleaning, validation, descriptive analytics, dashboarding, filtering, and exportable reporting. The app is designed as a freelance-friendly portfolio project that shows how messy tabular education data can be transformed into clear, reproducible outputs using Python and pandas.
 
 ## Live demo
 
@@ -10,14 +10,20 @@ Streamlit app: https://educational-analytics-dashboard-h7upkza2ggpfqv25u4uskv.st
 
 - Upload CSV or XLSX files.
 - Use a built-in synthetic educational dataset when no file is uploaded.
+- Work in a light, clean Streamlit theme aligned with the portfolio palette.
 - Preview rows, columns, dataset shape, and column names.
 - Normalize column names and trim extra whitespace in text fields.
 - Detect empty columns and missing values.
+- Filter clean data by year, course, risk level, gender group, and neighborhood group when those columns exist.
+- Review recommended educational analytics columns found or missing.
+- Generate a downloadable Data Quality Report with missing values, empty columns, duplicate IDs, and out-of-range checks.
 - Download a cleaned CSV dataset.
-- Calculate top-level metrics for records, attendance, grades, failed subjects, and high-risk students.
+- Download a filtered CSV dataset.
+- Calculate top-level metrics for records, attendance, grades, failed subjects, high-risk student count, and high-risk percentage.
 - Summarize educational indicators by course.
-- Visualize students by course, average attendance by course, and risk-level distribution.
+- Visualize students by course, average attendance by course, average grade by course, failed subjects by risk level, and risk-level distribution.
 - Export the course-level summary as CSV.
+- Export risk summary by course as CSV when risk and course columns exist.
 
 ## Technical Stack
 
@@ -31,6 +37,8 @@ educational-analytics-dashboard/
 ├── README.md
 ├── requirements.txt
 ├── .gitignore
+├── .streamlit/
+│   └── config.toml
 ├── data/
 │   └── sample_educational_data.csv
 ├── src/
@@ -58,10 +66,18 @@ Start the Streamlit app:
 streamlit run app.py
 ```
 
+The local app uses the same light Streamlit theme configured in `.streamlit/config.toml`.
+
 ## Run Tests
 
 ```bash
 pytest -q
+```
+
+Optional compile check:
+
+```bash
+python -m compileall .
 ```
 
 ## Privacy Note
